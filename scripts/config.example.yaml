@@ -1,0 +1,23 @@
+# Phabricator base URL (no trailing slash)
+base_url: https://phabricator.tools.flnltd.com
+
+# Your Phabricator username
+username: your_username
+
+# Required tags - always added to new tickets
+required_tags:
+  - loadshift_team
+
+# Optional tags
+optional_tags:
+  - slug: basic_user_experience_loadshift
+    when: "UI/UX, usability, accessibility"
+  - slug: ops_enterprise_team_efficiency_improvement_loadshift
+    when: "Admin tools, reporting, automation"
+  - slug: user_growth_loadshift
+    when: "User acquisition, retention, engagement"
+
+# Team members for team_status.py
+team_members:
+  - alice
+  - bob
