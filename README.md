@@ -1,96 +1,177 @@
-# Phabricator Tickets Skill
+# Phab — Phabricator Skill for AI Coding Agents
 
-A shareable [Claude Code](https://claude.com/claude-code) skill for managing Phabricator tickets from the command line.
+> A plug-and-play skill that lets AI coding agents (Claude Code, Cursor, Windsurf, etc.)
+> manage Phabricator tickets through natural language.
 
-## What this skill does
+No need to memorise CLI flags or API calls — just tell your AI agent what you want,
+and it handles search, create, update, and team status for you.
 
-- **Search** tickets by assignee, author, status, priority
-- **Create** tickets from Markdown files with automatic image upload
-- **Update** tickets with description sync and incremental image upload
-- **Team status** showing workload summary table and per-person breakdown
+### ✨ Features
 
-## Prerequisites
+| | Feature | What it does |
+|---|---------|-------------|
+| 🔍 | **Search & Query** | Find tickets by assignee, status, priority, keyword — in natural language |
+| 📝 | **Create Ticket** | Turn a local Markdown file into a Phabricator ticket, one command |
+| 🔄 | **Sync Ticket** | Push local edits to an existing ticket with safe read-merge-update |
+| 👥 | **Team Status** | Workload overview — open counts, priority breakdown, per-person details |
+| 📎 | **Auto File Upload** | Local images uploaded automatically; File ID written back to Markdown |
+| ⚡ | **Skill Hot-reload** | Repo-level install — edit SKILL.md, save, and your AI agent picks up changes instantly. Fork & customise your own workflows on top of Phab |
 
-- Python 3.11+
-- [uv](https://docs.astral.sh/uv/) package manager
-- A Phabricator account with an API token
+> **Works with:** Claude Code `/phab` · Cursor · Windsurf · any agent that supports skill files
 
-## Setup
+## Install
+
+**One-line install** (run from your project root):
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/jaysean1/tickets-shared.git
-cd tickets-shared/scripts
+curl -fsSL https://raw.githubusercontent.com/jaysean1/phab-skill/main/install.sh | bash
+```
 
-# 2. Install dependencies
-UV_CACHE_DIR=/tmp/uv-cache uv sync
+This clones the repo into `.claude/skills/phab/` and installs Python dependencies.
+Because it is a git clone, you can `git pull` inside the skill folder to update anytime.
 
-# 3. Run guided setup
+> **Manual install** — if you prefer to do it yourself:
+>
+> ```bash
+> mkdir -p .claude/skills
+> git clone https://github.com/jaysean1/phab-skill.git .claude/skills/phab
+> cd .claude/skills/phab/scripts && UV_CACHE_DIR=/tmp/uv-cache uv sync
+> ```
+
+## Setup (First Time)
+
+After install, type `/phab` in Claude Code (or your AI agent) and it will guide you
+through an interactive setup. The setup wizard will:
+
+1. Create `config.yaml` and `.env` from templates
+2. Ask you for:
+   - **Phabricator base URL** — your team's Phabricator instance
+   - **Username** — your Phabricator username
+   - **API token** — get one at `<base_url>/settings/user/<username>/page/apitokens/`
+   - **Team members** — usernames of your team for status reports
+3. Validate configuration and test the API connection
+
+You can also run setup manually:
+
+```bash
+cd .claude/skills/phab/scripts
 UV_CACHE_DIR=/tmp/uv-cache uv run setup.py
 ```
 
-The setup script will:
-1. Create `config.yaml` and `.env` from example templates
-2. Guide you through filling in your Phabricator URL, username, and API token
-3. Validate your configuration
-4. Test the API connection
+## Core Workflows
 
-## Quick Start
+### Search Tickets
 
-```bash
-cd tickets-shared/scripts
+Find tickets by assignee, status, priority, or keyword.
 
-# Search your open tickets
-UV_CACHE_DIR=/tmp/uv-cache uv run search_tickets.py -a your_username -s open
-
-# Get ticket details
-UV_CACHE_DIR=/tmp/uv-cache uv run get_ticket.py T123456
-
-# Create ticket from Markdown
-UV_CACHE_DIR=/tmp/uv-cache uv run create_ticket.py --file prd.md --tags loadshift_team
-
-# Update ticket from Markdown
-UV_CACHE_DIR=/tmp/uv-cache uv run update_ticket.py --file prd.md
-
-# Team workload overview
-UV_CACHE_DIR=/tmp/uv-cache uv run team_status.py
 ```
+"Show me all open tickets assigned to alice"
+"Find high-priority bugs created this week"
+```
+
+### Create Ticket
+
+Create a Phabricator ticket from a local Markdown file. Images are uploaded automatically.
+
+```
+"Create a ticket from prd.md with tag loadshift_team"
+```
+
+After creation, the ticket ID (e.g. `T123456`) is written back to the Markdown frontmatter
+so you can update it later.
+
+### Update Ticket
+
+Sync changes from your local Markdown to an existing ticket. Uses a read-merge-update
+workflow to avoid overwriting changes made on Phabricator.
+
+```
+"Update the ticket from prd.md"
+"Add a comment to T123456: design review done"
+```
+
+### Team Status
+
+Get a workload summary for your team — open ticket counts, priority breakdown,
+and per-person details.
+
+```
+"Show team status"
+```
+
+## Key Features
+
+### File Upload & Phab ID Writeback
+
+When you create or update a ticket from Markdown, local images are automatically uploaded
+to Phabricator. The File ID is written back as an HTML comment:
+
+```markdown
+<!-- Before -->
+![Mockup](images/mockup.png)
+
+<!-- After -->
+![Mockup](images/mockup.png) <!-- F123456 -->
+```
+
+On subsequent updates, images with a File ID comment are **skipped** — no duplicate uploads.
+
+### Targeted Update via Frontmatter `ticket_id`
+
+The `ticket_id` field in your Markdown frontmatter links the file to a specific ticket:
+
+```markdown
+---
+title: My Feature PRD
+ticket_id: T123456
+---
+```
+
+When you say "update the ticket from this file", the skill reads the existing ticket,
+merges your local changes, and pushes the update — a safe read-merge-update workflow.
+
+### Related Documents Cleanup
+
+When uploading to Phabricator, the `## Related Documents` section is transformed:
+- Entries with `ticket_id` → replaced with Phabricator ticket links
+- Entries without `ticket_id` → removed (local file paths are dead links on Phabricator)
 
 ## File Structure
 
 ```
-tickets-shared/
-├── README.md              # This file
-├── SKILL.md               # Skill definition for Claude Code
-├── .gitignore
-├── references/            # Detailed usage guides
+phab-skill/
+├── README.md               # This file
+├── SKILL.md                # Skill definition (name, description, instructions)
+├── install.sh              # One-line installer
+├── references/             # Detailed usage guides
 │   ├── create-tickets.md
 │   ├── file-upload.md
 │   ├── query-tickets.md
 │   ├── team-status.md
 │   └── update-tickets.md
 └── scripts/
-    ├── config.example.yaml  # Configuration template
-    ├── .env.example         # Environment variable template
-    ├── config.py            # Configuration loader
-    ├── setup.py             # Guided setup script
-    ├── phabricator.py       # Core Phabricator API
-    ├── markdown_utils.py    # Markdown processing utilities
-    ├── create_ticket.py     # Create tickets CLI
-    ├── update_ticket.py     # Update tickets CLI
-    ├── search_tickets.py    # Search tickets CLI
-    ├── get_ticket.py        # Get ticket details CLI
-    ├── upload_file.py       # File upload CLI
-    ├── team_status.py       # Team workload status CLI
-    ├── pyproject.toml       # Python project config
-    └── uv.lock              # Dependency lock file
+    ├── config.example.yaml # Configuration template
+    ├── .env.example        # API token template
+    ├── setup.py            # Interactive setup wizard
+    ├── config.py           # Configuration loader
+    ├── phabricator.py      # Core Phabricator API client
+    ├── markdown_utils.py   # Markdown processing
+    ├── create_ticket.py    # Create tickets from Markdown
+    ├── update_ticket.py    # Update tickets / add comments
+    ├── search_tickets.py   # Search & filter tickets
+    ├── get_ticket.py       # Get ticket details
+    ├── upload_file.py      # File upload utility
+    ├── team_status.py      # Team workload status
+    └── pyproject.toml      # Python dependencies
 ```
 
 ## Configuration
 
-After running `setup.py`, two files are created (git-ignored):
+After running setup, two files are created in `scripts/` (both git-ignored):
 
-- **`scripts/config.yaml`** — Phabricator URL, username, tags, team members
-- **`scripts/.env`** — API token only
+| File | Contents |
+|------|----------|
+| `config.yaml` | Phabricator URL, username, default tags, team members |
+| `.env` | `PHABRICATOR_API_TOKEN=your_token_here` |
 
 See `config.example.yaml` and `.env.example` for the template format.

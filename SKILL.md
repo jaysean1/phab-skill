@@ -1,9 +1,9 @@
 ---
-name: tickets
-description: This skill manages Phabricator ticket workflows. It supports (1) querying tickets by various criteria, (2) creating new tickets with optional image attachments from Markdown, (3) updating existing tickets using a read-merge-update approach, (4) uploading files to the file server, and (5) showing team workload status.
+name: phab
+description: Phabricator skill for AI coding agents. Search, create, update tickets and view team status — all through natural language. Supports Markdown-based workflows with automatic image upload and File ID tracking.
 ---
 
-# Tickets Skill
+# Phab Skill
 
 Manage Phabricator tickets with full CRUD operations, image upload with File ID tracking, and Markdown-based workflow.
 
@@ -12,7 +12,7 @@ Manage Phabricator tickets with full CRUD operations, image upload with File ID 
 Run the guided setup script to configure your environment:
 
 ```bash
-cd tickets-shared/scripts
+cd phab-skill/scripts
 UV_CACHE_DIR=/tmp/uv-cache uv sync
 UV_CACHE_DIR=/tmp/uv-cache uv run setup.py
 ```
@@ -48,7 +48,7 @@ This will:
 ## Quick Start
 
 ```bash
-cd tickets-shared/scripts
+cd phab-skill/scripts
 UV_CACHE_DIR=/tmp/uv-cache uv sync  # First time only
 
 # Search your open tickets
