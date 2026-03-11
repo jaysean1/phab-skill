@@ -41,21 +41,22 @@ Because it is a git clone, you can `git pull` inside the skill folder to update 
 ## Setup (First Time)
 
 After install, type `/phab` in Claude Code (or your AI agent) and it will guide you
-through an interactive setup. The setup wizard will:
+through a quick 2-step setup:
 
-1. Create `config.yaml` and `.env` from templates
-2. Ask you for:
-   - **Phabricator base URL** — your team's Phabricator instance
-   - **Username** — your Phabricator username
-   - **API token** — get one at `<base_url>/settings/user/<username>/page/apitokens/`
-   - **Team members** — usernames of your team for status reports
-3. Validate configuration and test the API connection
+1. **Phabricator URL** — your team's Phabricator instance (e.g. `https://phabricator.example.com`)
+2. **API token** — get one at `<base_url>/settings/user/me/page/apitokens/`
 
-You can also run setup manually:
+That's it! Your **username is detected automatically** via the `user.whoami` API — no need
+to type it in.
+
+The skill runs a config check (`check_config.py`) every time it starts. If anything is
+missing, it guides you through the setup interactively.
+
+You can also run the config check manually:
 
 ```bash
 cd .claude/skills/phab/scripts
-UV_CACHE_DIR=/tmp/uv-cache uv run setup.py
+UV_CACHE_DIR=/tmp/uv-cache uv run check_config.py
 ```
 
 ## Core Workflows
@@ -152,6 +153,7 @@ phab-skill/
 └── scripts/
     ├── config.example.yaml # Configuration template
     ├── .env.example        # API token template
+    ├── check_config.py     # Startup config check (auto-fetches username)
     ├── setup.py            # Interactive setup wizard
     ├── config.py           # Configuration loader
     ├── phabricator.py      # Core Phabricator API client

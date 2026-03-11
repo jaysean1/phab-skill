@@ -7,21 +7,38 @@ description: Phabricator skill for AI coding agents. Search, create, update tick
 
 Manage Phabricator tickets with full CRUD operations, image upload with File ID tracking, and Markdown-based workflow.
 
-## First Time Setup
+## Startup Config Check
 
-Run the guided setup script to configure your environment:
+**Every time this skill is invoked**, run the config check script first:
 
 ```bash
 cd phab-skill/scripts
-UV_CACHE_DIR=/tmp/uv-cache uv sync
-UV_CACHE_DIR=/tmp/uv-cache uv run setup.py
+UV_CACHE_DIR=/tmp/uv-cache uv sync  # First time only
+UV_CACHE_DIR=/tmp/uv-cache uv run check_config.py
 ```
 
-This will:
-1. Create `config.yaml` and `.env` from example templates
-2. Guide you through filling in your settings
-3. Validate your configuration
-4. Test the API connection
+The script outputs a single JSON line. Parse it and follow the rules below:
+
+### If `ok: true`
+
+Config is valid. Proceed to the user's request (search, create, update, etc.).
+
+### If `ok: false`
+
+Guide the user to fill in the missing values. The `missing` and `empty` fields tell you what is needed.
+
+**Only 2 user inputs are required:**
+
+1. **`base_url`** — Ask: "What is your Phabricator instance URL? (e.g. `https://phabricator.example.com`)"
+   → Write the value into `phab-skill/scripts/config.yaml` under `base_url`
+
+2. **`PHABRICATOR_API_TOKEN`** — Tell the user: "Go to `<base_url>/settings/user/me/page/apitokens/` to create a token."
+   → Ask: "Paste your API token here"
+   → Write the value into `phab-skill/scripts/.env` as `PHABRICATOR_API_TOKEN=<token>`
+
+3. **`username`** — **Do NOT ask the user.** After base_url and token are set, re-run `check_config.py`. It calls the `user.whoami` API to fetch and write the username automatically.
+
+After collecting both values, re-run `check_config.py` to confirm `ok: true`.
 
 ## User Context
 
