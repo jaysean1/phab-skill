@@ -9,10 +9,15 @@ Manage Phabricator tickets with full CRUD operations, image upload with File ID 
 
 ## Startup Config Check
 
-**Every time this skill is invoked**, run the config check script first:
+**Every time this skill is invoked**, run the config check script first.
+
+> **Path resolution:** The `scripts/` directory is located next to this SKILL.md file.
+> Resolve the absolute path of this SKILL.md, then append `scripts/` to get the scripts directory.
+> Example: if this file is at `/home/user/project/.claude/skills/phab/SKILL.md`,
+> the scripts directory is `/home/user/project/.claude/skills/phab/scripts/`.
 
 ```bash
-cd phab-skill/scripts
+cd <SCRIPTS_DIR>   # Resolved absolute path to the scripts/ directory next to this file
 UV_CACHE_DIR=/tmp/uv-cache uv sync  # First time only
 UV_CACHE_DIR=/tmp/uv-cache uv run check_config.py
 ```
@@ -27,18 +32,21 @@ Config is valid. Proceed to the user's request (search, create, update, etc.).
 
 Guide the user to fill in the missing values. The `missing` and `empty` fields tell you what is needed.
 
+> **IMPORTANT: Never collect sensitive information (API tokens, passwords) in the conversation.**
+> Always direct the user to edit the config files themselves.
+
 **Only 2 user inputs are required:**
 
-1. **`base_url`** — Ask: "What is your Phabricator instance URL? (e.g. `https://phabricator.example.com`)"
-   → Write the value into `phab-skill/scripts/config.yaml` under `base_url`
+1. **`base_url`** — Tell the user: "Please open `<SCRIPTS_DIR>/config.yaml` and set the `base_url` field to your Phabricator instance URL (e.g. `https://phabricator.example.com`)."
 
-2. **`PHABRICATOR_API_TOKEN`** — Tell the user: "Go to `<base_url>/settings/user/me/page/apitokens/` to create a token."
-   → Ask: "Paste your API token here"
-   → Write the value into `phab-skill/scripts/.env` as `PHABRICATOR_API_TOKEN=<token>`
+2. **`PHABRICATOR_API_TOKEN`** — Tell the user:
+   - "Go to `<base_url>/settings/user/me/page/apitokens/` to create a token."
+   - "Then open `<SCRIPTS_DIR>/.env` and paste your token as `PHABRICATOR_API_TOKEN=<your-token>`."
+   - **Do NOT ask the user to paste the token in this conversation.**
 
 3. **`username`** — **Do NOT ask the user.** After base_url and token are set, re-run `check_config.py`. It calls the `user.whoami` API to fetch and write the username automatically.
 
-After collecting both values, re-run `check_config.py` to confirm `ok: true`.
+After the user confirms they have edited the files, re-run `check_config.py` to confirm `ok: true`.
 
 ## User Context
 
@@ -64,8 +72,10 @@ After collecting both values, re-run `check_config.py` to confirm `ok: true`.
 
 ## Quick Start
 
+All commands below must run from `<SCRIPTS_DIR>` (the `scripts/` directory next to this file).
+
 ```bash
-cd phab-skill/scripts
+cd <SCRIPTS_DIR>
 UV_CACHE_DIR=/tmp/uv-cache uv sync  # First time only
 
 # Search your open tickets

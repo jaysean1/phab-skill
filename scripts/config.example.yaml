@@ -1,5 +1,5 @@
 # Phabricator base URL (no trailing slash)
-base_url: https://phabricator.tools.flnltd.com
+base_url: https://your-phabricator-instance.com
 
 # Your Phabricator username
 username: your_username

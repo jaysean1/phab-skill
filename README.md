@@ -52,10 +52,11 @@ to type it in.
 The skill runs a config check (`check_config.py`) every time it starts. If anything is
 missing, it guides you through the setup interactively.
 
-You can also run the config check manually:
+You can also run the config check manually from the `scripts/` directory inside
+the skill folder (the exact path depends on where you installed it):
 
 ```bash
-cd .claude/skills/phab/scripts
+cd <path-to-skill>/scripts
 UV_CACHE_DIR=/tmp/uv-cache uv run check_config.py
 ```
 
