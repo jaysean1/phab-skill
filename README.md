@@ -165,6 +165,8 @@ phab-skill/
     ├── get_ticket.py       # Get ticket details
     ├── upload_file.py      # File upload utility
     ├── team_status.py      # Team workload status
+    ├── test_markdown_utils.py  # Unit tests for markdown_utils
+    ├── uv.lock             # Locked dependency versions (uv)
     └── pyproject.toml      # Python dependencies
 ```
 
