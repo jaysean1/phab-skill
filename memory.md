@@ -1,15 +1,15 @@
 # Memory
 
-This file stores current facts and recent decisions for `tickets-shared/`.
+This file stores current facts and recent decisions for `phab-skill/`.
 Long-term Phabricator skill setup and workflow details belong in `README.md`.
 
 ## Active Projects and Work
 
-- No `tickets-shared/` active memory has been recorded yet.
+- No `phab-skill/` active memory has been recorded yet.
 
 ## Scheduled Tasks
 
-- No `tickets-shared/` scheduled task memory has been recorded yet.
+- No `phab-skill/` scheduled task memory has been recorded yet.
 
 ## Core Memory
 

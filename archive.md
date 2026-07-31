@@ -1,8 +1,8 @@
 # Archive
 
-This file stores old `tickets-shared/` history that should not load every session.
+This file stores old `phab-skill/` history that should not load every session.
 Use it only when older ticket-skill context is needed.
 
 ## Archived Entries
 
-- No archived `tickets-shared/` entries have been recorded yet.
+- No archived `phab-skill/` entries have been recorded yet.

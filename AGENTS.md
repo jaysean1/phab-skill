@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file is the agent entry point for `tickets-shared/`.
+This file is the agent entry point for `phab-skill/`.
 
 ## README First
 
